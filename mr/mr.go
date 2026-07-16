@@ -19,3 +19,28 @@ type MapFunc func(filename string, contents string) []KeyValue
 // (already grouped together) and returns the single output value for
 // that key. For word count, this would sum the values.
 type ReduceFunc func(key string, values []string) string
+
+type TaskRequest struct {
+    WorkerID int
+}
+
+type TaskResponse struct {
+    TaskType string
+	TaskID   int
+	Filename string
+	NumReduce int
+}
+
+type ReportDoneArgs struct {
+	WorkerID int
+	TaskType string
+	TaskID   int
+}
+
+type ReportDoneReply struct {
+	Good bool
+}
+
+type GetWorkerId struct {
+	WorkerId int
+}

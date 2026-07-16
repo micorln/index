@@ -6,7 +6,6 @@ package main
 
 import (
 	"index/mr"
-	"sort"
 	"strings"
 	"unicode"
 	"strconv"
@@ -29,11 +28,6 @@ func Map(filename string, contents string) []mr.KeyValue {
 		wordKv := mr.KeyValue{cleanupWord(word), "1"}
 		keyValArr = append(keyValArr, wordKv)
 	}
-
-	sort.Slice(keyValArr, func(i, j int) bool {
-		return keyValArr[i].Key > keyValArr[j].Key
-	})
-
 
 	return keyValArr
 }

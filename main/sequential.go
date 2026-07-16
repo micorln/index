@@ -39,12 +39,13 @@ func main() {
 		//   kvs := mapF(filename, contents)
 		// and append kvs into allKVs.
 		databytes, err := os.ReadFile(filename)
-		data := string(databytes)
+		
 		if err != nil {
     		fmt.Println("Read failed!")
 			fmt.Println(err)
 			return
 		}
+		data := string(databytes)
 		kvFile := mapF(filename, data)
 		for _, kv := range kvFile {
 			allKVs = append(allKVs, kv)
@@ -53,14 +54,23 @@ func main() {
 	}
 
 	sort.Slice(allKVs, func(i, j int) bool {
-		return allKVs[i].Key > allKVs[j].Key
+		return allKVs[i].Key < allKVs[j].Key
 	})
 
+	f, err := os.Create("mr-out-0")
+	if err != nil {
+    	fmt.Fprintf(os.Stderr, "create output failed: %v\n", err)
+    	os.Exit(1)
+	}
+	defer f.Close()
+
+	for _, kv := range allKVs {
+    	fmt.Fprintf(f, "%s\t%s\n", kv.Key, kv.Value)
+	}
+
 	fmt.Println("Map output : ")
-	for key, count := range allKVs {
-		fmt.Println(key)
-		fmt.Println(count)
-		fmt.Println("---")
+	for ind, kv := range allKVs {
+		fmt.Printf("%d: %s = %s\n", ind, kv.Key, kv.Value)
 	}
 
 	// TODO(you): sort allKVs by Key (sort.Slice).
@@ -93,10 +103,8 @@ func main() {
 	}
 
 	fmt.Println("Reduce output : ")
-	for key, count := range outputs {
-		fmt.Println(key)
-		fmt.Println(count)
-		fmt.Println("---")
+	for ind, kv := range outputs {
+		fmt.Printf("%d: %s = %s\n", ind, kv.Key, kv.Value)
 	}
 
 	_ = mapF
