@@ -83,7 +83,7 @@ func processTask(task mr.TaskResponse, workerId int) {
 		var allKVs []mr.KeyValue
 
 		for _, entry := range entries {
-			file, err := os.Open("./" + entry.Name() + strconv.Itoa(task.TaskID))
+			file, err := os.Open("./map-outputs/" + entry.Name() + "/mr-" + strconv.Itoa(task.TaskID))
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -107,6 +107,10 @@ func processTask(task mr.TaskResponse, workerId int) {
 			}
 
 		}
+
+		sort.Slice(allKVs, func(i, j int) bool {
+			return allKVs[i].Key < allKVs[j].Key
+		})
 
 		prev := ""
 		var valForKey []string
@@ -135,6 +139,8 @@ func processTask(task mr.TaskResponse, workerId int) {
 		for ind, kv := range outputs {
 			fmt.Printf("%d: %s = %s\n", ind, kv.Key, kv.Value)
 		}		
+		fmt.Println("Reduction complete!")
+
 	}
 }
 
@@ -182,5 +188,5 @@ func main() {
 
 	client.Call("Coordinator.ReportDone", &doneArgs, &doneReply)
 
-    fmt.Println("result:", reply.TaskType, reply.TaskID, reply.Filename) 
+    // fmt.Println("result:", reply.TaskType, reply.TaskID, reply.Filename) 
 }
